@@ -42,7 +42,7 @@
 
  
  // 复杂对象需要递归定义属性
-let _toString = Object.prototype.toString
+let _toString = Object.prototype.toString;
 function defineReactive(data) {
     let keys = Object.keys(data);
     keys.forEach(key => {
@@ -67,7 +67,7 @@ function defineReactive(data) {
                     console.log('设置相同的值，不需要更新');
                 }
             }
-        })
+        });
     });
 }
 
