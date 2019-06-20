@@ -1,0 +1,26 @@
+{
+  "name": "vue",
+  "version": "1.0.0",
+  "description": "![vue工作原理](./assert/132184689-57b310ea1804f_articlex.png)",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/newbornhsir/vue.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/newbornhsir/vue/issues"
+  },
+  "homepage": "https://github.com/newbornhsir/vue#readme",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4",
+    "webpack-dev-server": "^3.7.2"
+  }
+}
