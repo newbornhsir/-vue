@@ -1,5 +1,5 @@
-import { observe } from './observer'
-import { createElement } from './elemet'
+import { observe } from '../observer/observer'
+import { createElement } from '../elemet'
 export function initMixin(Vue) {
     Vue.prototype.__init = function (options) {
         let vm = this

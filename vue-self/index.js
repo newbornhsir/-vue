@@ -1,4 +1,4 @@
-import Vue from './src/index'
+import Vue from './src/instance/index'
 
 window.vm = new Vue({
     el: '#app',

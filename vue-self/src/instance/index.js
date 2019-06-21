@@ -1,8 +1,8 @@
 import { initMixin } from './init'
 import { renderMixin } from './render'
-import { VNode } from './vnode';
-import { createElement } from './elemet';
-import { isArray, isDef } from './util';
+import { VNode } from '../vdom/vnode';
+import { createElement } from '../elemet';
+import { isArray, isDef } from '../util';
 function Vue (options) {
     this.__init(options)
 }

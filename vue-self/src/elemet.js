@@ -1,4 +1,4 @@
-import { VNode, createTextVNode } from './vnode'
+import { VNode, createTextVNode } from './vdom/vnode'
 import { isPrimitive, isArray, isObj } from './util'
 function normalizeChildren (children, nestedIndex) {
     /**
