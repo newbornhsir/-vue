@@ -1,6 +1,7 @@
-const path = require('path');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
-    entry: './vue-self/src/index.js',
+    entry: './vue-self/index.js',
     output: {
         filename: 'vue.js',
         path: path.resolve(__dirname, 'vue-self', 'dist')
@@ -9,5 +10,10 @@ module.exports = {
     devServer: {
         contentBase: './vue-self/dist',
         hot: true
-    }
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'index.html'
+        })
+    ]
 }
