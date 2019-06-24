@@ -1,5 +1,5 @@
 import { observe } from '../observer/observer'
-import { createElement } from '../elemet'
+import { createElement } from '../vdom/create-vnode'
 export function initMixin(Vue) {
     Vue.prototype.__init = function (options) {
         let vm = this

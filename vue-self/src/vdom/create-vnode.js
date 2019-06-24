@@ -1,6 +1,9 @@
-import { VNode, createTextVNode } from './vdom/vnode'
-import { isPrimitive, isArray, isObj } from './util'
-function normalizeChildren (children, nestedIndex) {
+/**
+ * render.call(vm, vm.$createElement)的时候创建vnode
+ */
+import { VNode, createTextVNode } from './vnode'
+import { isPrimitive, isArray } from '../util'
+function normalizeChildren (children) {
     /**
      * res存储产生的值，递归调用的都存放在这里后返回新的children
      */
@@ -28,6 +31,7 @@ export function createElement (context, tag, data, children, text) {
     /**
      * TODO:
      * 创建vnode需要传递四个参数，但是在vue中最少可以传递1个
+     * 此处没处理，所以需要按照vnode所需要的顺序传递参数
      */
     if (isArray(children)) {
         // 处理子vnode
