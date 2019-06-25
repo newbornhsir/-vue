@@ -3,6 +3,9 @@
  */
 
 function defineReactive(data, key, value) {
+    if (typeof value === 'object') {
+        observe(value)
+    }
     let property = Object.getOwnPropertyDescriptor(data,key);
     let {get: getter, set: setter} = property;
     let dep = new Dep();
@@ -37,7 +40,7 @@ function defineReactive(data, key, value) {
 
 class Dep {
     /*
-     * 某一个主体对象，可以有多个观察者对其感兴趣，
+     * 某一个主体对象的依赖收集器，可以有多个观察者对其感兴趣，
      * 当主体发生改变的时候，可以通知相对应的观察者更新
      * 因此其有三个基本的方法，添加观察者，移除观察者，提醒更新
      */
@@ -69,41 +72,92 @@ class Dep {
 
 Dep.target = null;
 
+function parsePath(expOrFn) {
+    /**解析路径 */
+    if (/[^\w.$]/.test(expOrFn)) {
+        return
+    }
+    const segments = expOrFn.split('.')
+    return (obj) => {
+        for (let i = 0; i < segments.length; i++) {
+            if (!obj) return
+            obj = obj[segments[i]]
+        }
+        return obj
+    }
+}
 
 class Watcher {
     /*
      * 观察者，对某一目标主体感兴趣，在目标主体发生变化的时候会update
      */
-    constructor (obj, key) {
+    constructor (obj, expOrFn, cb) {
+        /** expOrFn: a.b.c或者函数的情况 */
         this.obj = obj;
-        this.key = key;
+        this.getter = parsePath(expOrFn)
         this.get();
+        this.cb = cb
     }
     update () {
-        console.log(this.get());
-        console.log('update');
+        if (this.cb) this.cb.call(this.obj, this.obj)
     }
     addDep (dep) {
         dep.addSub(this);
     }
     get () {
         Dep.target = this;
-        let val = this.obj[this.key];
+        let val = this.getter.call(this.obj, this.obj)
         Dep.target = null;
         return val;
     }
 }
 
+/** 数组代理，处理其它的操作 */
+const arrayMethod = Object.create(Array.prototype);
+const hasProto = '__proto__' in {}
+const arrayKeys = Object.getOwnPropertyNames(arrayMethod)
+function protoAugment (target, src) {
+    target.__proto__ = src
+}
+function copyAugment (target, src, keys) {
+    /**直接将属性定义在数组上 */
+    for (let i = 0; i < keys.length; i++) {
+        Object.defineProperty(target, keys[i], src[keys[i]])
+    }
+}
+['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(method => {
+    const original = Array.prototype[method]
+    Object.defineProperty(arrayMethod, method, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value (...args) {
+            return original.apply(this, args)
+        }
+    })
+})
+
+/** 函数递归的将对象所有的属性定义成响应式 */
 function observe (data) {
     let keys = Object.keys(data);
-    keys.forEach(key => {
-        defineReactive(data, key, data[key]);
-        new Watcher(data, key);
-    });
+    /**处理值为数组的情况 */
+    if (Array.isArray(data)) {
+        // 检测是否支持__proto__
+        const augment = hasProto ? protoAugment : copyAugment
+        augment(data, arrayMethod, arrayKeys)
+    } else {
+        keys.forEach(key => {
+            defineReactive(data, key, data[key]);
+            new Watcher(data, key, () => {
+                console.log(key+'==> update')
+            });
+        });
+    }
 }
 
 data = {
     test: 'name',
-    age: 12
+    age: 12,
+    a: [1, 2]
 };
 observe(data);
