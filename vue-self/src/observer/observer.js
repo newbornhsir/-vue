@@ -1,6 +1,30 @@
+import { isArray } from '../util'
+import { Dep } from './Dep'
+
+export class Observer {
+    constructor (data) {
+        if (isArray(data)) {
+            proxyArray(data)
+            this.walkArray(data)
+        } else {
+            this.walk(data)
+        }
+    }
+    walk(data) {
+        Object.keys(data).forEach(key => {
+            defineReactive(data, key, data[key])
+        })
+    }
+    walkArray (data) {
+        let i = 0
+        for (i; i< data.length; i++) {
+            observe(data[i])
+        }
+    }
+}
+
+
 function defineReactive(data, key, value) {
-    let property = Object.getOwnPropertyDescriptor(data,key);
-    let {get: getter, set: setter} = property;
     let dep = new Dep();
     Object.defineProperty(data, key, {
         configurable: true,
@@ -10,17 +34,12 @@ function defineReactive(data, key, value) {
             if (Dep.target) {
                 dep.depend();
             }
-            return getter ? getter.call(data) : value;
+            return value
         },
         set: function (newVal) {
-            let val = getter ? getter.call(data) : value;
-            if (newVal !== val) {
+            if (newVal !== value) {
                 // 值改变，通知更新
-                if (setter) {
-                    setter.call(data, newVal);
-                } else {
-                    value = newVal;
-                }
+                value = newVal
                 dep.notify();
             } else {
                 console.log('设置相同的值，不需要更新');
@@ -30,69 +49,39 @@ function defineReactive(data, key, value) {
     return dep;
 }
 
-
-class Dep {
-    /*
-     * 某一个主体对象，可以有多个观察者对其感兴趣，
-     * 当主体发生改变的时候，可以通知相对应的观察者更新
-     * 因此其有三个基本的方法，添加观察者，移除观察者，提醒更新
-     */
-    constructor () {
-        this.subs = [];
-    }
-    addSub (watcher) {
-        if (this.subs.indexOf(watcher) === -1) {
-            // 避免重复添加
-            this.subs.push(watcher);
+const arrayMethod = Object.create(Array.prototype)
+const methods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse']
+const arrayKeysLength = methods.length
+methods.forEach(method => {
+    const original = Array.prototype[method]
+    Object.defineProperty(arrayMethod,method, {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value (...args) {
+            let res = original.apply(this, args)
+            /**
+             * FIXME:
+             * 执行过代理方法之后，需要重新设置响应式对象， 
+             * 这里设置重复了， 
+             */
+            observe(this)
+            return res
         }
-    }
-    removeSub (watcher) {
-        this.subs.splice(this.subs.indexOf(watcher), 1);
-    }
-    notify () {
-        console.log(this.subs);
-        this.subs.forEach(sub => sub.update());
-    }
-    depend () {
-        /*
-         * 通过target，来建立Watcher和Dep之间的联系，将watcher添加到subs数组中去
-         */
-        if (Dep.target) {
-            Dep.target.addDep(this);
+    })
+})
+// 这样只需要定义一次
+const hasProto = '__proto__' in {}
+function proxyArray (arr) {
+    if (hasProto) {
+        arr.__proto__ = arrayMethod
+    } else {
+        for (let i = 0; i < arrayKeysLength; i++) {
+            Object.defineProperty(arr, arrayKeysLength[i], arrayMethod[arrayKeysLength[i]])
         }
     }
 }
-
-Dep.target = null;
-
-
-class Watcher {
-    /*
-     * 观察者，对某一目标主体感兴趣，在目标主体发生变化的时候会update
-     */
-    constructor (obj, key, cb) {
-        this.obj = obj;
-        this.key = key;
-        this.get();
-        this.cb = cb;
-    }
-    update () {
-        this.cb();
-    }
-    addDep (dep) {
-        dep.addSub(this);
-    }
-    get () {
-        Dep.target = this;
-        let val = this.obj[this.key];
-        Dep.target = null;
-        return val;
-    }
-}
-
 export function observe (data) {
-    let keys = Object.keys(data);
-    keys.forEach(key => {
-        defineReactive(data, key, data[key]);
-    });
+    let ob = new Observer(data)
+    return ob
 }

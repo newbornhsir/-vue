@@ -6,8 +6,6 @@ function defineReactive(data, key, value) {
     if (typeof value === 'object') {
         observe(value)
     }
-    let property = Object.getOwnPropertyDescriptor(data,key);
-    let {get: getter, set: setter} = property;
     let dep = new Dep();
     Object.defineProperty(data, key, {
         configurable: true,
@@ -17,17 +15,12 @@ function defineReactive(data, key, value) {
             if (Dep.target) {
                 dep.depend();
             }
-            return getter ? getter.call(data) : value;
+            return value;
         },
         set: function (newVal) {
-            let val = getter ? getter.call(data) : value;
-            if (newVal !== val) {
+            if (newVal !== value) {
                 // 值改变，通知更新
-                if (setter) {
-                    setter.call(data, newVal);
-                } else {
-                    value = newVal;
-                }
+                value = newVal
                 dep.notify();
             } else {
                 console.log('设置相同的值，不需要更新');
@@ -41,6 +34,8 @@ function defineReactive(data, key, value) {
 class Dep {
     /*
      * 某一个主体对象的依赖收集器，可以有多个观察者对其感兴趣，
+     * 实际上是defineReactive中data[key]抽象出来的管理类，用来处理依赖，减少耦合
+     * 发布订阅的变体，data可以发布，可以订阅
      * 当主体发生改变的时候，可以通知相对应的观察者更新
      * 因此其有三个基本的方法，添加观察者，移除观察者，提醒更新
      */
@@ -132,7 +127,14 @@ function copyAugment (target, src, keys) {
         configurable: true,
         writable: true,
         value (...args) {
-            return original.apply(this, args)
+            let res = original.apply(this, args)
+            /**
+             * FIXME:
+             * 执行过代理方法之后，需要重新设置响应式对象， 
+             * 这里设置重复了， 
+             */
+            observe(this)
+            return res
         }
     })
 })
@@ -145,14 +147,13 @@ function observe (data) {
         // 检测是否支持__proto__
         const augment = hasProto ? protoAugment : copyAugment
         augment(data, arrayMethod, arrayKeys)
-    } else {
-        keys.forEach(key => {
-            defineReactive(data, key, data[key]);
-            new Watcher(data, key, () => {
-                console.log(key+'==> update')
-            });
+    } 
+    keys.forEach(key => {
+        defineReactive(data, key, data[key]);
+        new Watcher(data, key, () => {
+            console.log(key+'==> update')
         });
-    }
+    });
 }
 
 data = {
