@@ -1,9 +1,12 @@
 import Vue from './instance'
 import { VNode } from './vdom/vnode';
 import { createElm } from './vdom/create-element';
+import { Watcher } from './observer/watcher';
 
 Vue.prototype.__patch__ = function (oldVNode, vnode) {
-    /** 判断oldVnoe */
+    /** FIXME:
+     * 这里只判断了是否为真是元素，但是没有对非真是元素进行处理
+     */
     let isRealElement = !!oldVNode.nodeType
     const insertedVnodeQueue = []
     if (isRealElement) {
@@ -22,10 +25,16 @@ Vue.prototype._update = function (vnode) {
     const vm = this
     const prevVnode = vm._vnode
     vm._vnode = vnode
+    /**
+     * FIXME:
+     * 目前不对新旧vnode进行对比,
+     */
     if (!prevVnode) {
         vm.$el = vm.__patch__(vm.$el, vnode, false, false)
     } else {
-        vm.$el = vm.__patch__(prevVnode, vnode)
+        /**FIXME:直接情况 */
+        vm.$el.innerHTML = '';
+        vm.$el = vm.__patch__(vm.$el, vnode)
     }
 }
 Vue.prototype.$mount = function (el) {
@@ -34,10 +43,15 @@ Vue.prototype.$mount = function (el) {
     vm.$el = el
     /* TODO: beforeMount */
     const updateComponent = function () {
-        vm._update(vm._render())
+        const vnode = vm._render()
+        console.log(vnode)
+        vm._update(vnode)
     }
-    /*TODO: watcher */
-    updateComponent.call(vm,vm)
+    /*TODO: 
+     * 创建wathcer,更新数据
+     */
+
+    new Watcher(vm, updateComponent)
     /**TODO: mounted声明周期钩子 */
     return vm
 }
