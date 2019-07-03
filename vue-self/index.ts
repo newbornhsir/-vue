@@ -1,6 +1,6 @@
 import Vue from './src/index'
 
-window.vm = new Vue({
+new Vue({
     el: '#app',
     data: {
         name: 'hello, vue',

@@ -21,7 +21,19 @@ Vue.prototype.__patch__ = function (oldVNode, vnode) {
     console.log(vnode.elm)
     return vnode.elm
 }
-Vue.prototype._update = function (vnode) {
+interface VnodeInterFace {
+    tag: string;
+    data: object;
+    text: string;
+    children: Array<any>;
+    elm: object;
+    context: object;
+    parent: undefined | object;
+    ns: undefined;
+    isRootInsert: boolean;
+    age: string;
+}
+Vue.prototype._update = function (vnode:VnodeInterFace):void {
     const vm = this
     const prevVnode = vm._vnode
     vm._vnode = vnode
@@ -43,7 +55,7 @@ Vue.prototype.$mount = function (el) {
     vm.$el = el
     /* TODO: beforeMount */
     const updateComponent = function () {
-        const vnode = vm._render()
+        const vnode : VnodeInterFace = vm._render()
         console.log(vnode)
         vm._update(vnode)
     }

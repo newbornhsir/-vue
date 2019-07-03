@@ -34,6 +34,10 @@ vnode是描述dom节点的对象
 createElement函数创建vnode => 递归处理vnode，为vnode创建$elm属性，并添加到上级vnode的$elm属性中 => 处理data,与elm绑定 => 最顶级的$app中添加了所有的elm，呈现在页面上，这是最有一步，所以只操作一次dom对象
 
 
+### 添加ts支持
+1. 安装 typescript ts-loader依赖
+2. 配置module
+3. 配置tsconfig.json
 
 
 
