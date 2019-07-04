@@ -1,9 +1,9 @@
 import { isDef, isObj } from '../util'
-
-export function updateStyle (vnode) {
+import { VnodeInterFace } from './vnode'
+export function updateStyle (vnode : VnodeInterFace) {
     const style = vnode.data.style
     if (isDef(style) && isObj(style)) {
-        let key
+        let key : string | number
         for (key in style) {
             vnode.elm.style[key] = style[key]
         }

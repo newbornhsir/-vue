@@ -1,6 +1,9 @@
 import { Dep } from './Dep'
 
 export class Watcher {
+    cb : any;
+    vm: object;
+    getter: any;
     constructor (vm, expOrFn, cb) {
         this.cb = cb
         this.vm = vm

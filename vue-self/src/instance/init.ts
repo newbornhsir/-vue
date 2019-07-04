@@ -46,7 +46,7 @@ export function initMixin(Vue) {
                  * FIXME:
                  * 数据劫持，数据变为响应式，此时并没有watcher监听dep
                  */
-                observe(opts.data, true)
+                observe(opts.data)
             }
         }
         /**

@@ -1,34 +1,35 @@
 /**
  * render.call(vm, vm.$createElement)的时候创建vnode
  */
-import { VNode, createTextVNode } from './vnode'
-import { isPrimitive, isArray } from '../util'
-import { VnodeInterFace } from './vnode';
-function normalizeChildren (children : Array<VnodeInterFace>) {
+import { VNode, createTextVNode } from './vnode';
+import { isPrimitive, isArray } from '../util';
+function normalizeChildren(children) {
     /**
      * res存储产生的值，递归调用的都存放在这里后返回新的children
      */
-    let res = []
-    let i, child
+    var res = [];
+    var i, child;
     // FIXME: 这里只处理两种类型vnode, text,和element类型
     for (i = 0; i < children.length; i++) {
-        child = children[i]
+        child = children[i];
         if (Object.prototype.toString.call(child).slice(8, -1).toLowerCase() === 'array') {
             // children嵌套的情况
-            res.push(normalizeChildren(child))
-        } else if (isPrimitive(child)) {
+            res.push(normalizeChildren(child));
+        }
+        else if (isPrimitive(child)) {
             // child是文本节点
-            res.push(createTextVNode(child))
-        } else {
+            res.push(createTextVNode(child));
+        }
+        else {
             /**
              * 这里children是嵌套h()写的，所以函数执行之后就是Vnode
              */
-            res.push(child)
+            res.push(child);
         }
     }
-    return res
+    return res;
 }
-export function createElement (context, tag, data, children, text, bool?:boolean) {
+export function createElement(context, tag, data, children, text, bool) {
     /**
      * TODO:
      * 创建vnode需要传递四个参数，但是在vue中最少可以传递1个
@@ -36,8 +37,8 @@ export function createElement (context, tag, data, children, text, bool?:boolean
      */
     if (isArray(children)) {
         // 处理子vnode
-        children = normalizeChildren(children)
+        children = normalizeChildren(children);
     }
-    let vnode = new VNode(tag,data,children, text, undefined, context)
-    return vnode
+    var vnode = new VNode(tag, data, children, text, undefined, context);
+    return vnode;
 }

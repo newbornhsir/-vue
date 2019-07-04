@@ -21,19 +21,7 @@ Vue.prototype.__patch__ = function (oldVNode, vnode) {
     console.log(vnode.elm)
     return vnode.elm
 }
-interface VnodeInterFace {
-    tag: string;
-    data: object;
-    text: string;
-    children: Array<any>;
-    elm: object;
-    context: object;
-    parent: undefined | object;
-    ns: undefined;
-    isRootInsert: boolean;
-    age: string;
-}
-Vue.prototype._update = function (vnode:VnodeInterFace):void {
+Vue.prototype._update = function (vnode) {
     const vm = this
     const prevVnode = vm._vnode
     vm._vnode = vnode
@@ -55,7 +43,7 @@ Vue.prototype.$mount = function (el) {
     vm.$el = el
     /* TODO: beforeMount */
     const updateComponent = function () {
-        const vnode : VnodeInterFace = vm._render()
+        const vnode = vm._render()
         console.log(vnode)
         vm._update(vnode)
     }
@@ -63,7 +51,7 @@ Vue.prototype.$mount = function (el) {
      * 创建wathcer,更新数据
      */
 
-    new Watcher(vm, updateComponent)
+    new Watcher(vm, updateComponent,()=>{})
     /**TODO: mounted声明周期钩子 */
     return vm
 }

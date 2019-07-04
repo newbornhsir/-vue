@@ -28,7 +28,7 @@ function createChild (vnode, children, insertedVnodeQueue) {
     }
 }
 
-export function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested) {
+export function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested?:any) {
     vnode.isRootInsert = !nested
     const {data, children, tag} = vnode
     /**FIXME:这里只对两种节点类型处理： 文本节点和元素节点 */
@@ -54,7 +54,9 @@ export function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested) 
     insert(parentElm, vnode.elm, refElm)
 }
 
-const cbs = {}
+const cbs = {
+    create: []
+}
 // 这里是创建的时候需要的执行的函数
 cbs.create = []
 cbs.create.push(updateStyle)

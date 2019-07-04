@@ -3,7 +3,7 @@ import Vue from './src/index'
 new Vue({
     el: '#app',
     data: {
-        name: 'hello, vue',
+        name: 'hello, vue and ts',
         arr: [1, 2, 3]
     },
     render (h) {
