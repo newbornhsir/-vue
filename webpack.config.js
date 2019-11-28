@@ -4,11 +4,11 @@ module.exports = {
     entry: './vue/index.ts',
     output: {
         filename: 'vue.js',
-        path: path.resolve(__dirname, 'vue-self', 'dist')
+        path: path.resolve(__dirname, 'dist')
     },
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './vue-self/dist',
+        contentBase: './dist',
         hot: true
     },
     resolve: {

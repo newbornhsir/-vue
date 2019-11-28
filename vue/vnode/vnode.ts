@@ -1,5 +1,3 @@
-import { createElement } from "../day4/create-element"
-
 export class VNode {
   tag : string | undefined
   data ?: object
